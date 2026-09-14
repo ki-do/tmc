@@ -161,27 +161,6 @@ Run bulk creation:
 tmc variant add-batch --repo small --json-file variants.json
 ```
 
-#### Deletion TMs with variants
-
-When deleting a TM that has variants, the default behavior is:
-
-1. only the selected parent TM is deleted
-2. variants are kept untouched
-3. each variant of the deleted TM is dereferenced (`isVariantOf` is cleared)
-
-To delete the parent TM together with all its variants recursively, use `--with-variants`:
-
-```bash
-tmc delete --repo small --force=true --with-variants <parent-tm-id>
-```
-
-REST example:
-
-```bash
-curl -X DELETE "http://localhost:8080/thing-models/<parent-tm-id>?repo=small&force=true&with-variants=true"
-```
-
-
 ## Publish a Catalog to a Git Forge
 
 Initialize the directory where your file repository is located as a git repository and use the git workflows to commit and push it to
