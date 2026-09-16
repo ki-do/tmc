@@ -390,8 +390,6 @@ func (h *TmcHandler) ImportThingModel(w http.ResponseWriter, r *http.Request, p 
 
 	defer r.Body.Close()
 	b, err := io.ReadAll(r.Body)
-	err = r.Body.Close()
-
 	if err != nil {
 		HandleErrorResponse(w, r, err)
 		return
@@ -435,23 +433,17 @@ func (h *TmcHandler) AddThingModelVariant(w http.ResponseWriter, r *http.Request
 
 	defer r.Body.Close()
 	b, err := io.ReadAll(r.Body)
-	b = bytes.TrimSpace(b)
-	err = r.Body.Close()
 	if err != nil {
 		HandleErrorResponse(w, r, err)
 		return
 	}
+	b = bytes.TrimSpace(b)
 	if len(b) == 0 {
 		HandleErrorResponse(w, r, NewBadRequestError(nil, "Empty request body"))
 		return
 	}
 
 	if b[0] == '[' {
-		if params.VariantId != nil && strings.TrimSpace(*params.VariantId) != "" {
-			HandleErrorResponse(w, r, NewBadRequestError(nil, "variant-id query parameter is not supported for batch requests"))
-			return
-		}
-
 		var requests []commands.AddVariantBatchRequest
 		decoder := json.NewDecoder(bytes.NewReader(b))
 		decoder.DisallowUnknownFields()
@@ -461,6 +453,10 @@ func (h *TmcHandler) AddThingModelVariant(w http.ResponseWriter, r *http.Request
 		}
 
 		results := h.Service.AddThingModelVariantBatch(r.Context(), convertRepoName(params.Repo), tmID, requests)
+		if len(requests) == 0 {
+			HandleErrorResponse(w, r, NewBadRequestError(nil, "batch cannot be empty"))
+			return
+		}
 		HandleJsonResponse(w, r, http.StatusOK, results)
 		return
 	}
@@ -478,18 +474,7 @@ func (h *TmcHandler) AddThingModelVariant(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	queryVariantID := ""
-	if params.VariantId != nil {
-		queryVariantID = strings.TrimSpace(*params.VariantId)
-	}
 	variantID := strings.TrimSpace(req.VariantID)
-	if queryVariantID != "" {
-		if variantID != "" && variantID != queryVariantID {
-			HandleErrorResponse(w, r, NewBadRequestError(nil, "variant-id differs between query and body"))
-			return
-		}
-		variantID = queryVariantID
-	}
 
 	err = h.Service.AddThingModelVariant(r.Context(), convertRepoName(params.Repo), tmID, commands.AddVariantOptions{
 		VariantID:       variantID,

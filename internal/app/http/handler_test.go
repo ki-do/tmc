@@ -1225,21 +1225,6 @@ func Test_AddThingModelVariant(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	})
 
-	t.Run("link existing variant from query parameter", func(t *testing.T) {
-		routeWithVariant := route + "&variant-id=" + url.QueryEscape("a-corp/eagle/bt2000-special/v1.0.0-20240108140117-243d1b462ccd.tm.json")
-		hs.On("AddThingModelVariant", mock.Anything, "", parentTMID, commands.AddVariantOptions{
-			VariantID: "a-corp/eagle/bt2000-special/v1.0.0-20240108140117-243d1b462ccd.tm.json",
-		}).Return(nil).Once()
-
-		rec := testutils.NewRequest(http.MethodPost, routeWithVariant).
-			WithHeader(HeaderContentType, MimeJSON).
-			WithBody([]byte(`{}`)).
-			RunOnHandler(httpHandler)
-
-		assert.Equal(t, http.StatusNoContent, rec.Code)
-		assert.Equal(t, 0, rec.Body.Len())
-	})
-
 	t.Run("create variant from mpn and body overrides", func(t *testing.T) {
 		hs.On("AddThingModelVariant", mock.Anything, "", parentTMID, commands.AddVariantOptions{
 			Mpn:         "bt2000-special",
@@ -1254,15 +1239,6 @@ func Test_AddThingModelVariant(t *testing.T) {
 
 		assert.Equal(t, http.StatusNoContent, rec.Code)
 		assert.Equal(t, 0, rec.Body.Len())
-	})
-
-	t.Run("fails without tm-id", func(t *testing.T) {
-		rec := testutils.NewRequest(http.MethodPost, "/thing-models/variants?variant-id=xzy.tm.jsonld").
-			WithHeader(HeaderContentType, MimeJSON).
-			WithBody([]byte(`{"title":"new title","description":"blablabla"}`)).
-			RunOnHandler(httpHandler)
-
-		assertResponse400(t, rec, "/thing-models/variants?variant-id=xzy.tm.jsonld")
 	})
 }
 

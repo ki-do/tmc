@@ -1441,14 +1441,6 @@ func (siw *ServerInterfaceWrapper) AddThingModelVariant(w http.ResponseWriter, r
 		return
 	}
 
-	// ------------- Optional query parameter "variant-id" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "variant-id", r.URL.Query(), &params.VariantId)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "variant-id", Err: err})
-		return
-	}
-
 	// ------------- Optional query parameter "with-attachments" -------------
 
 	err = runtime.BindQueryParameter("form", true, false, "with-attachments", r.URL.Query(), &params.WithAttachments)

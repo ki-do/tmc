@@ -532,9 +532,6 @@ type AddThingModelVariantParams struct {
 	// TmId TMID of a member of the family to which new variants should be added
 	TmId *string `form:"tm-id,omitempty" json:"tm-id,omitempty"`
 
-	// VariantId TMID of an existing variant Thing Model to link (single-object requests only)
-	VariantId *string `form:"variant-id,omitempty" json:"variant-id,omitempty"`
-
 	// WithAttachments Whether to also link the attachments of the parent TM to the variant TM (defaults to false)
 	WithAttachments *bool `form:"with-attachments,omitempty" json:"with-attachments,omitempty"`
 }

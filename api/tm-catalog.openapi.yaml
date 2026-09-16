@@ -822,12 +822,6 @@ paths:
           required: false
           schema:
             type: string
-        - name: variant-id
-          in: query
-          description: TMID of an existing variant Thing Model to link (single-object requests only)
-          required: false
-          schema:
-            type: string
         - name: with-attachments
           in: query
           description: Whether to also link the attachments of the parent TM to the variant TM (defaults to false)
